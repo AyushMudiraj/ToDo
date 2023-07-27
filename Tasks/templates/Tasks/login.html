@@ -1,0 +1,14 @@
+<!-- templates/login.html -->
+<form method='POST',action="">
+    {% csrf_token %}
+    <label for = 'email'><b>Email</b></label>
+    <input type = "text" placeholder = "Type email here" name = 'email' required>
+
+    <label for = "psw"><b>Password</b></label>
+    <input type = "password" placeholder = "Type password here" name = "psw" required>
+
+    <button type="submit">Login</button>
+</form>
+    <h3>Not Registered?</h3><a href = "{% url 'register' %}">Register here</a>
+  
+  

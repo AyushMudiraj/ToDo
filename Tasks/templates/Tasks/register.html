@@ -1,0 +1,39 @@
+<h3>Register Here</h3>
+<form method = 'POST' style="border:1px solid #ccc">
+    {% csrf_token %}
+    <div class="container">
+      <h1>Sign Up</h1>
+      <p>Please fill in this form to create an account.</p>
+      <hr>
+  
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email" name="email" required>
+  
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+
+      <label for="psw-repeat"><b>Repeat Password</b></label>
+      <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+  
+      <div>
+        <button type="button" class="cancelbtn"><a href = "{% url 'register' %}">Cancel</a></button>
+        <button type="submit" class="signupbtn"><a href = "{% url 'login' %}">Sign Up</a></button>
+      </div>
+      <p>Already a user?</p><a href = "{% url 'login' %}"> Sign In </a>
+    </div>
+  </form> 
+
+
+{%for task in tasks%}
+    <div>
+        <a href="{% url 'tasks:update_task' task.id %}">Update</a>
+        <a href="{% url 'tasks:delete' task.id %}">Delete</a>
+
+        {%if task.complete == True%}
+        <strike>{{task}}</strike>
+        {%else%}
+        <span>{{task}}</span>
+        {%endif%}
+
+    </div>
+{%endfor%}  

@@ -1,0 +1,34 @@
+<h1>Welcome, {{ request.user.email }}!</h1>
+<h2>Your Todos:</h2>
+<ul>
+  {% for todo in todos %}
+    <li>{{ todo.title }} {% if todo.completed %}(Completed){% endif %}</li>
+  {% endfor %}
+</ul>
+
+
+<h2>Create Todo:</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Create Todo</button>
+</form>
+
+<h2>Your Todos:</h2>
+<ul>
+  {% for todo in todos %}
+    <li>
+      {% if todo.completed %}
+        <strike>{{ todo.title }}</strike>
+      {% else %}
+        {{ todo.title }}
+        <form method="post" action="{% url 'mark_complete' todo.id %}">
+          {% csrf_token %}
+          <button type="submit">Mark Complete</button>
+        </form>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<button type="submit"><a href = "{% url 'login' %}"> Log Out</a></button>

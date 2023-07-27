@@ -1,0 +1,26 @@
+<h1>Welcome, {{ request.user.email }}!</h1>
+<h2>Your Todos:</h2>
+<ul>
+  {% for todo in todos %}
+    <li>{{ todo.title }} {% if todo.completed %}(Completed){% endif %}</li>
+  {% endfor %}
+</ul>
+
+
+
+{% comment %} <h1>To Do App</h1>
+<!-- templates/dashboard.html -->
+{% if user.is_authenticated %}
+  <h1>Welcome, {{ user.email }}!</h1>
+  <ul>
+    {% for todo in todos %}
+      <li>{{ todo.title }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <h1>You are not logged in.</h1>
+  <a href="{% url 'tasks:login' task.id %}">Login</a>
+  <p>"Don't have an account?"</p>
+  <a href="{% url 'tasks:register' task.id %}">Register</a>
+
+{% endif %} {% endcomment %}
