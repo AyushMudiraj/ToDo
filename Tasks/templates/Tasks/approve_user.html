@@ -1,0 +1,16 @@
+<!-- todo/templates/todo/approve_user.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Approval</title>
+</head>
+<body>
+    <h1>User Approval</h1>
+    <p>Are you sure you want to approve {{ user.email }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Approve">
+    </form>
+</body>
+</html>

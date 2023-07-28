@@ -1,0 +1,23 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <ul>
+        {% for todo in todos %}
+            <li>
+                {{ todo.title }} - {{ todo.description }} - Assigned To: {% if todo.assigned_to %}{{ todo.assigned_to.email }}{% else %}Not Assigned{% endif %} - {% if todo.is_completed %}(Completed){% endif %}
+                {% if not todo.is_completed and (todo.assigned_to == user or todo.user == user) %}
+                    <a href="{% url 'mark_todo_complete' todo.id %}">Mark Complete</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'add_todo' %}">Add Todo</a>
+    <a href="{% url 'group_todo_list' %}">Back to Group Todo List</a>
+</body>
+</html>

@@ -1,4 +1,43 @@
-<h3>Register Here</h3>
+{% extends 'Tasks/base.html' %}
+
+{%block content%}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" required><br>
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <h3>Register Here</h3>
 <form method = 'POST' style="border:1px solid #ccc">
     {% csrf_token %}
     <div class="container">
@@ -36,4 +75,4 @@
         {%endif%}
 
     </div>
-{%endfor%}  
+{%endfor%}   {% endcomment %}

@@ -1,0 +1,29 @@
+<!-- todo/templates/todo/group_todo_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Todo List</title>
+</head>
+<body>
+    <h1>Group Todo List</h1>
+    {% for domain, users in domain_groups.items %}
+        <h2>{{ domain }}</h2>
+        <ul>
+            {% for user in users %}
+                <li>
+                    {{ user.email }} {% if user.is_admin %}(Admin){% endif %}
+                    {% if user.is_approved %}
+                        {% if not user.is_admin %}
+                            (Approved)
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'approve_user' user.id %}">Approve</a>
+                    {% endif %}
+                    <a href="{% url 'todo_list' %}">View Todos</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>
