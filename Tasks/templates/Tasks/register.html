@@ -1,6 +1,4 @@
-{% extends 'Tasks/base.html' %}
 
-{%block content%}
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +6,7 @@
 </head>
 <body>
     <h1>Register</h1>
-    <form method="post">
+    <form method="post" action = {%url 'login'%}>
         {% csrf_token %}
         <label for="email">Email:</label>
         <input type="email" name="email" required><br>
@@ -16,11 +14,14 @@
         <label for="password">Password:</label>
         <input type="password" name="password" required><br>
 
-        <input type="submit" value="Register">
+        <label for = "repeat-password">Repeat Password</label>
+        <input type = "password" name = "repeat-password" required><br>
+
+        <input type="submit" >
     </form>
 </body>
 </html>
-{%endblock%}
+
 
 
 

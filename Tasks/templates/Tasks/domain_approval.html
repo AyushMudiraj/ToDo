@@ -1,7 +1,0 @@
-<!-- templates/domain_approval.html -->
-<h1>!Domain Approval!</h1>
-<p>Do you want to approve {{ user.email }} as a user for your domain?</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Approve User</button>
-</form>

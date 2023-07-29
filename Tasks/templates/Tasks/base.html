@@ -1,25 +1,9 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Todo App</title>
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="{% url 'register' %}">Register</a></li>
-            <li><a href="{% url 'login' %}">Login</a></li>
-        </ul>
-    </nav>
-    {% block content %}{% endblock %}
-</body>
-</html>
-
-
-{% comment %} <h1>Welcome to TODO's Application</h1>
-<div class = 'clearfix'>
-    <a href = "{% url 'register'%}">Signup!!</a>
+<h1>Welcome</h1>
+<div>
+    <a href = "{% url 'signup'%}">Register here</a>
 </div>
-<div class = 'clearfix'>
-    <a href = "{% url 'login'%}">Login!!</a>
-</div> {% endcomment %}
+<div>
+    <p>Already have an Account?
+    <a href = "{% url 'login'%}">Login here</a>
+    </p>
+</div>

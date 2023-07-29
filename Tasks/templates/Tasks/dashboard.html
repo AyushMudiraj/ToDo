@@ -17,16 +17,16 @@
             <li>
                 {{ todo.title }} - {{ todo.description }} - Assigned To: {% if todo.assigned_to %}{{ todo.assigned_to.email }}{% else %}Not Assigned{% endif %} - {% if todo.is_completed %}(Completed){% endif %}
                 {% if not todo.is_completed and todo.assigned_to == user  or  not todo.is_completed and todo.user == user  %}
-                    <a href="{% url 'mark_todo_complete' todo.id %}">Mark Complete</a>
+                    <a href="{% url 'complete_todo' todo.id %}">Mark Complete</a>
                 {% endif %}
                 {% if todo.user == user %}
-                    <a href="{% url 'delete_todo' todo.id %}">Delete</a>
+                    <a href="{% url 'delete' todo.id %}">Delete</a>
                 {% endif %}
             </li>
         {% endfor %}
     </ul>
     <h2>Add Todo</h2>
-    <form method="post" action="{% url 'add_todo' %}">
+    <form method="post" action="{% url 'update_todo' %}">
         {% csrf_token %}
         <label for="title">Title:</label>
         <input type="text" name="title" required><br>

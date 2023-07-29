@@ -1,122 +1,139 @@
-# todo/views.py
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import TodoItem
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model, login, authenticate, get_user
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseForbidden
-from django.contrib.auth import logout as django_logout
+from .models import *
+from .forms import *
+from django.contrib.auth import login, authenticate, logout
 
-CustomUser = get_user_model()
+from django.views.generic.detail import DetailView
 
-def register(request):
+
+# Create your views here.
+def home(request):
+    return render(request,'Tasks/base.html')
+
+def index(request):
+    # import ipdb;ipdb.set_trace()
+    tasks = Task.objects.all()
+    
+    form=TaskForm()
+    
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        # You can add more fields here if required
-
-    # Check if the email is already registered
-        if get_user_model().objects.filter(email=email).exists():
-            # Handle the case when the email is already registered
-            return render(request, 'Tasks/register.html', {'error_message': 'Email is already registered.'})
-
-        # Create a new user instance
-        user = get_user_model().objects.create_user(email=email, password=password, is_approved=False)
-
-        # Redirect to the login page after successful registration
-        return redirect('login')
-    return render(request, 'Tasks/register.html')
-
-def custom_login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = TaskForm(request.POST)
         if form.is_valid():
-            user = form.get_user()
-            if user.is_approved:
-                login(request, user)
-                return redirect('dashboard', {'user' : user})
-            else:
-                return HttpResponseForbidden("Your account has not been approved yet. Please wait for the domain admin to approve your registration.")
+            form.save()
+        return redirect('list')
     else:
-        form = AuthenticationForm(request)
-        user = get_user(request)
-    return render(request, 'Tasks/login.html', {'form': form, 'user':user})
+        user=request.user
+        context={'tasks':tasks,'user':user,'form':TaskForm()}
+        return render(request,'tasks/dashboard.html',context)
+    # context = {'tasks':tasks, 'form':form}
+    # return render(request,'tasks/list.html', context)
 
-
-@login_required
-def todo_list(request):
-    todos = TodoItem.objects.filter(user=request.user)
-
-    # Filter todos based on the user's domain
-    todos = todos.filter(user__email__endswith=request.user.email.split('@')[1])
-
-    return render(request, 'Tasks/dashboard.html', {'todos': todos})
-
-@login_required
-def add_todo(request):
+def update_task(request, pk):
+    task= Task.objects.get(id=pk)
+    print(pk)
+    form = TaskForm(instance=task)
+    
     if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        assigned_to_id = request.POST.get('assigned_to')  # Get assigned_to user id from the form
-
-        assigned_to = get_object_or_404(get_user_model(), id=assigned_to_id) if assigned_to_id else None
-
-        TodoItem.objects.create(title=title, description=description, user=request.user, assigned_to=assigned_to)
-        return redirect('dashboard')
+        form = TaskForm(request.POST, instance=task)
+        print("fgvhgvfcghjuhgbvgh")
+        if form.is_valid():
+            form.save()
+            return redirect('list')
     
-    users = get_user_model().objects.filter(email__endswith=request.user.email.split('@')[1])  # Filter users within the same domain
-    return render(request, 'Tasks/add_todo.html', {'users': users})
+    context = {'form':form}
+ 
+    return render(request, 'Tasks/add_todo.html', context)
 
-@login_required
-def approve_user(request, user_id):
-    User = get_user_model()
-    user = get_object_or_404(User, id=user_id)
+
+def deleteTask(request, pk):
+    item=Task.objects.get(id=pk)
     
-    # Check if the current user is the domain admin
-    domain = request.user.email.split('@')[1]
-    if not request.user.is_admin or not user.email.endswith(domain):
-        return HttpResponseForbidden("You don't have permission to approve this user.")
-
-    # Approve the user
-    user.is_approved = True
-    user.save()
+    if request.method == 'POST':
+        item.delete()
+        return redirect('list')
+        
     
-    return redirect('group_todo_list')
+    context ={'item':item}
+    return render(request,'Tasks/dashboard.html', context)
 
-@login_required
-def group_todo_list(request):
-    User = get_user_model()
-    domain_groups = {}
-    for user in User.objects.all():
-        domain = user.email.split('@')[1]
-        if domain in domain_groups:
-            domain_groups[domain].append(user)
+# def login(request):
+
+
+class UserView(DetailView):
+    template_name = 'Tasks/profile.html'
+
+    def get_object(self):
+        return self.request.user
+
+
+def assign_domain_admin(user):
+    if not User.objects.filter(domain=user.domain, is_admin=True).exists():
+        user.is_admin = True
+        user.save()
+
+def signup(request):
+    # import ipdb;ipdb.set_trace()
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            raw_password = form.cleaned_data.get('password1')
+            
+            dom=form.cleaned_data.get('email')
+            res = str(dom[dom.index('@') + 1 : ])
+            user.domain=res
+            user.save()
+            user = authenticate(request, email=user.email, password=raw_password)
+            if user is not None:
+                login(request, user)
+            else:
+                print("user is not authenticated")
+                
+            assign_domain_admin(user)
+            print(user.domain)
+            print(user.is_admin)
+            if user.is_admin == False:
+                user.is_active = False
+            user.save()
+            return redirect('profile')
+    else:
+        form = SignUpForm()
+    return render(request, 'Tasks/register.html', {'form': form})    
+def logoutView(request):
+    logout(request)
+    return redirect("login")
+
+def loginView(request):
+    tasks = Task.objects.all()
+    form = TaskForm()
+    context = {"tasks":tasks, "form":form}
+    user = request.user
+    
+    # if user.is_authenticated():
+    #     return redirect("tasks:list")
+    
+    if request.POST:
+        form= AccountAuthenticationForm(request.POST)
+        if form.is_valid():
+            email = request.POST['email']
+            password = request.POST['password']
+            user = authenticate(email=email, password=password)
+            if user:
+                login(request,user)
+                destination= get_redirect_if_exists(request)
+                if destination:
+                    return redirect(destination)
+                return render(request,"Tasks/dashboard.html",context)
         else:
-            domain_groups[domain] = [user]
-    return render(request, 'Tasks/group_todo_list.html', {'domain_groups': domain_groups})
+            context['login_form']=form
+    return render(request,'Tasks/login.html',context)
 
-@login_required
-def mark_todo_complete(request, todo_id):
-    todo = get_object_or_404(TodoItem, id=todo_id)
 
-    # Check if the user is assigned to the todo or if the user is the creator of the todo
-    if todo.assigned_to == request.user or todo.user == request.user:
-        todo.is_completed = True
-        todo.save()
-
-    return redirect('dashboard')
-
-@login_required
-def delete_todo(request, todo_id):
-    todo = get_object_or_404(TodoItem, id=todo_id)
-
-    # Check if the user is the creator of the todo
-    if todo.user == request.user:
-        todo.delete()
-
-    return redirect('dashboard')
-@login_required
-def logout(request):
-    django_logout(request)
-    return redirect('login')
+def get_redirect_if_exists(request):
+    redirect=None
+    if request.GET:
+        if request.GET.get("next"):
+            redirect=str(request.GET.get("next"))
+    return redirect

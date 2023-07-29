@@ -1,46 +1,40 @@
 from django.contrib import admin
-from .models import *
-from django.contrib.auth.admin import UserAdmin
+
 # Register your models here.
-# class CustomUserAdmin(UserAdmin):
-#     model = CustomUser
-#     list_display = ('email', 'is_staff', 'is_domain_admin', 'domain_approved')
-#     list_filter = ('is_staff', 'is_domain_admin', 'domain_approved')
-#     fieldsets = (
-#         (None, {'fields': ('email', 'password')}),
-#         ('Permissions', {'fields': ('is_staff', 'is_domain_admin', 'domain_approved')}),
-#         ('Important dates', {'fields': ('last_login',)}),
-#     )
-#     add_fieldsets = (
-#         (None, {
-#             'classes': ('wide',),
-#             'fields': ('email', 'password1', 'password2'),
-#         }),
-#     )
-#     ordering = ('email',)
-#     search_fields = ('email',)
+from .models import *
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-# Custom admin class for the custom user model
-class CustomUserAdmin(UserAdmin):
-    # Remove 'ordering' and 'list_display' as they are not required for the custom admin class
-    list_filter = ['is_active', 'is_admin', 'is_approved']
-    search_fields = ['email']
 
-    # Override the 'fieldsets' to include the relevant fields in the 'add' and 'change' forms
+class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Permissions', {'fields': ('is_active', 'is_admin', 'is_approved')}),
-        # Keep other relevant fields here as per your requirements
+        (None, {'fields': ('email', 'password', 'name', 'last_login','domain')}),
+        ('Permissions', {'fields': (
+            'is_active', 
+            'is_staff', 
+            'is_superuser',
+            'groups', 
+            'is_admin',
+            'user_permissions',
+        )}),
     )
-
-    # Override the 'add_fieldsets' to include the relevant fields in the 'add' form
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'is_active', 'is_admin', 'is_approved'),
-        }),
+        (
+            None,
+            {
+                'classes': ('wide',),
+                'fields': ('email', 'password1', 'password2')
+            }
+        ),
     )
-    
-admin.site.register(CustomUser, UserAdmin)
-admin.site.register(TodoItem)
 
+    list_display = ('email', 'name', 'is_staff', 'last_login','domain')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups','is_admin')
+    search_fields = ('email',)
+    ordering = ('email',)
+    filter_horizontal = ('groups', 'user_permissions',)
+
+
+admin.site.register(User, UserAdmin)
+
+admin.site.register(Task)
