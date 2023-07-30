@@ -1,0 +1,10 @@
+<h1>Assign Todos</h1>
+
+<br>
+<br>
+<form method="POST" action={%  url 'assign' assign_to.id %}>
+    {% csrf_token %}
+    
+    {{form.title}}
+    <input type="submit" name="Create Task">
+</form>

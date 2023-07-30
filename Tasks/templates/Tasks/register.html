@@ -6,16 +6,9 @@
 </head>
 <body>
     <h1>Register</h1>
-    <form method="post" action = {%url 'login'%}>
+    <form method="POST">
         {% csrf_token %}
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-
-        <label for = "repeat-password">Repeat Password</label>
-        <input type = "password" name = "repeat-password" required><br>
+        {{ form.as_p }}
 
         <input type="submit" >
     </form>

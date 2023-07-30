@@ -1,9 +1,0 @@
-<!-- todo/templates/todo/add_todo.html -->
-<div class="container-section">
-    <form action="{% url 'home' %}" method="post" class="create-todo-form">
-        {% csrf_token %}
-
-        <input type="text" name="new-todo" id="new-todo" required>
-        <button type="submit">Add Todo</button>
-    </form>
-</div>

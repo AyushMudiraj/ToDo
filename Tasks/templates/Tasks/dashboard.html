@@ -1,89 +1,10 @@
-<!-- todo/templates/todo/dashboard.html -->
-{% comment %} {% extends 'todo/base.html' %}
+<h1>This is my dashboard</h1>
 
+{% for user in users %}
+{% if user.domain == curr_user.domain  %}
+<div>
+    {{user}} {{user.is_active}}  <a href="{% url 'assign_task' user.id %}">Assign Todo</a> 
+</div>
+{% endif %}
 
-{%block content%} {% endcomment %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Welcome to Your Dashboard {{request.user.email}}</h1>
-    <h2>Your Todos</h2>
-    <ul>
-        <!-- Display the user's todos here -->
-        {% for todo in todos %}
-            <li>
-                {{ todo.title }} - {{ todo.description }} - Assigned To: {% if todo.assigned_to %}{{ todo.assigned_to.email }}{% else %}Not Assigned{% endif %} - {% if todo.is_completed %}(Completed){% endif %}
-                {% if not todo.is_completed and todo.assigned_to == user  or  not todo.is_completed and todo.user == user  %}
-                    <a href="{% url 'complete_todo' todo.id %}">Mark Complete</a>
-                {% endif %}
-                {% if todo.user == user %}
-                    <a href="{% url 'delete' todo.id %}">Delete</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <h2>Add Todo</h2>
-    <form method="post" action="{% url 'update_todo' %}">
-        {% csrf_token %}
-        <label for="title">Title:</label>
-        <input type="text" name="title" required><br>
-
-        <label for="description">Description:</label><br>
-        <textarea name="description" required></textarea><br>
-
-        <label for="assigned_to">Assign To:</label>
-        <select name="assigned_to">
-            <option value="" selected>Not Assigned</option>
-            {% for user in users %}
-                <option value="{{ user.id }}">{{ user.email }}</option>
-            {% endfor %}
-        </select><br>
-        
-        <input type="submit" value="Add Todo">
-    </form>
-    <a href="{% url 'logout' %}">Logout</a>
-</body>
-</html>
-{% comment %} {%endblock%} {% endcomment %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% comment %} <h1>Welcome, {{ request.user.email }}!</h1>
-<h2>Your Todos:</h2>
-<ul>
-  {% for todo in todos %}
-    <li>{{ todo.title }} {% if todo.completed %}(Completed){% endif %}</li>
-  {% endfor %}
-</ul> {% endcomment %}
-
-
-
-{% comment %} <h1>To Do App</h1>
-<!-- templates/dashboard.html -->
-{% if user.is_authenticated %}
-  <h1>Welcome, {{ user.email }}!</h1>
-  <ul>
-    {% for todo in todos %}
-      <li>{{ todo.title }}</li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <h1>You are not logged in.</h1>
-  <a href="{% url 'tasks:login' task.id %}">Login</a>
-  <p>"Don't have an account?"</p>
-  <a href="{% url 'tasks:register' task.id %}">Register</a>
-
-{% endif %} {% endcomment %}
+{% endfor %}

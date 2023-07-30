@@ -26,7 +26,6 @@ class UserManager(BaseUserManager):
             date_joined=now,
             is_admin=is_admin,
             domain=domain,
-            
             is_superuser=is_superuser,
             **extra_fields
         )
@@ -35,10 +34,10 @@ class UserManager(BaseUserManager):
         return user
     
     def create_user(self, email, password, **extra_fields):
-        return self._create_user(email,password,False,False,**extra_fields)
+        return self._create_user(email,password,True, False, False,**extra_fields)
     
     def create_superuser(self, email, password, **extra_fields):
-        user=self._create_user(email,password,True,True,**extra_fields)
+        user=self._create_user(email,password, True, True, True,**extra_fields)
         return user
     
     
@@ -59,8 +58,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     
     # Add the related_name attribute to differentiate reverse accessor names
-    groups = models.ManyToManyField(Group, related_name='custom_users')
-    user_permissions = models.ManyToManyField(Permission, related_name='custom_users')
+    groups = models.ManyToManyField(Group, related_name='user')
+    user_permissions = models.ManyToManyField(Permission, related_name='user')
     
     def get_absolute_url(self):
         return "/users/%i/" % (self.pk)
@@ -69,9 +68,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
     title= models.CharField(max_length=200)
+    description = models.CharField(max_length = 1000, null = True, blank = True)
     complete = models.BooleanField(default=False)
     created= models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return self.title
+        return self.title, self.description
     
