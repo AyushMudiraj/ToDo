@@ -11,13 +11,12 @@
         <!-- Display the user's todos here -->
         {% for todo in todos %}
             <li>
-              {% if todo.user.id == user.id %}
-              <a href="{% url 'updatetodo' todo.id %}">Update</a>
               {% if todo.complete == True %}
                 <strike>{{todo.title}}</strike>
               {% else %}
                 <span>{{todo.title}}</span>
-              
+              {% if todo.user.id == user.id %}
+                <a href="{% url 'updatetodo' todo.id %}">Update</a>
               {% endif %}
               {% comment %} <a href="{% url 'complete_todo' todo.id %}">Mark Complete</a>
               {%if todo.complete == True%}

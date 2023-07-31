@@ -34,10 +34,12 @@ class UserManager(BaseUserManager):
         return user
     
     def create_user(self, email, password, **extra_fields):
-        return self._create_user(email,password,True, False, False,**extra_fields)
+        domain = email.split('@')[1]
+        return self._create_user(email,password,True, False, False, domain,**extra_fields)
     
     def create_superuser(self, email, password, **extra_fields):
-        user=self._create_user(email,password, True, True, True,**extra_fields)
+        domain = email.split('@')[1]
+        user=self._create_user(email,password, True, True, True, domain,**extra_fields)
         return user
     
     

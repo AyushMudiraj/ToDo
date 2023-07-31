@@ -130,3 +130,20 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/accounts/todo/' 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'activity.log',
+        },
+    },
+    'loggers': {
+        'activity_logger': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+    },
+}

@@ -15,13 +15,13 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            raw_password = form.cleaned_data.get('password1')
+            passw = form.cleaned_data.get('password1')
             
-            dom=form.cleaned_data.get('email')
-            res = str(dom[dom.index('@') + 1 : ])
-            user.domain=res
+            domain=form.cleaned_data.get('email')
+            final_domain = str(domain[domain.index('@') + 1 : ])
+            user.domain=final_domain
             user.save()
-            user = authenticate(request, email=user.email, password=raw_password)
+            user = authenticate(request, email=user.email, password=passw)
             if user is not None:
                 login(request, user)
             else:
@@ -42,7 +42,7 @@ def logoutView(request):
     logout(request)
     return redirect("login")
 
-def loginView(request):
+def login_account(request):
     tasks = Task.objects.all()
     # form = TaskForm()
     user = request.user
@@ -50,9 +50,9 @@ def loginView(request):
     
     
     if user.is_authenticated:
-        return render(request,"Tasks/profile.html", context)
+        return render(request,"Tasks/user_profile.html", context)
     
-    destination = get_redirect_if_exists(request)
+    # destination = get_redirect_if_exists(request)
     
     
     if request.POST:
@@ -66,20 +66,20 @@ def loginView(request):
                 fresh_context = {"tasks":tasks,"user":user}
                 login(request,user)
                 # destination= get_redirect_if_exists(request)
-                if destination:
-                    return redirect(destination)
-                return render(request,'Tasks/profile.html',fresh_context)
+                # if destination:
+                #     return redirect(destination)
+                return render(request,"Tasks/user_profile.html",fresh_context)
         else:
             context['login_form']=form
     return render(request,'Tasks/login.html',context)
 
 
-def get_redirect_if_exists(request):
-    redirect=None
-    if request.GET:
-        if request.GET.get("next"):
-            redirect=str(request.GET.get("next"))
-    return redirect
+# def get_redirect_if_exists(request):
+#     redirect=None
+#     if request.GET:
+#         if request.GET.get("next"):
+#             redirect=str(request.GET.get("next"))
+#     return redirect
 
 # def index(request):
 #     # import ipdb;ipdb.set_trace()
@@ -105,7 +105,7 @@ def assign_domain_admin(user):
         user.save()
 
 class UserView(DetailView):
-    template_name = 'Tasks/profile.html'
+    template_name = 'Tasks/user_profile.html'
 
     def get_object(self):
         return self.request.user
@@ -157,7 +157,7 @@ def createtodo(request):
 #     return render(request, 'Tasks/add_todo.html', context)
 
 
-def deletetodo(request, pk):
+def tododelete(request, pk):
     item=Task.objects.get(id=pk)
     
     if request.method == 'POST':
@@ -166,17 +166,17 @@ def deletetodo(request, pk):
         
     
     context ={'item':item}
-    return render(request,'Tasks/delete.html', context)
+    return render(request,'Tasks/task_delete.html', context)
 
 
 def dashboard(request):
      users = User.objects.all()
      user = request.user
      print(user)
-     mytodo = Task.objects.all()
+     todo = Task.objects.all()
      context = {
           "users":users,
-          "mytodo":mytodo,
+          "mytodo":todo,
           "curr":user
      }
      return render(request,'Tasks/dashboard.html',context)
@@ -198,9 +198,9 @@ def assign_task(request,pk):
           print(request.user.id)
           form = TaskForm(request.POST)
           if form.is_valid():
-            newtodo = form.save()
-            newtodo.user = assign_to
-            newtodo.save()
+            todo = form.save()
+            todo.user = assign_to
+            todo.save()
           return render(request, "Tasks/dashboard.html",context)
      context = {
               "user":request.user,
@@ -208,7 +208,7 @@ def assign_task(request,pk):
               "assign_to":User.objects.get(id=pk),
               }
      
-     return render(request,"Tasks/assign.html",context)
+     return render(request,"Tasks/task_assign.html",context)
  
 def update_todo(request, pk):
 	todo = Task.objects.get(id=pk)
@@ -223,7 +223,7 @@ def update_todo(request, pk):
 
 	context = {'form':form}
 
-	return render(request, "Tasks/update.html", context)
+	return render(request, "Tasks/task_modify.html", context)
 
      
 
